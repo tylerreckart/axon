@@ -21,7 +21,7 @@ struct VertexOut {
   float4 position [[position]];
 };
 
-constant int MAX_N = 160;
+constant int MAX_N = 240;
 constant float GOLDEN_ANGLE = 2.399963229728653;
 
 vertex VertexOut axon_vertex(uint vertexID [[vertex_id]]) {
@@ -118,7 +118,7 @@ fragment float4 axon_fragment(VertexOut in [[stage_in]],
   float spin = t * (0.22 + thinkW * 0.10 + speakW * 0.05);
   float tilt = 0.42 + 0.05 * sin(t * 0.13 + prog);
 
-  int N = int(mix(96.0, 160.0, quality) + 0.5);
+  int N = int(mix(140.0, 240.0, quality) + 0.5);
   float nCount = float(N);
   float bound = radius * (1.0 + disp) * 1.55;
   if (length(uv) > bound) {

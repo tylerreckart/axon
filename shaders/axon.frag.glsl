@@ -22,7 +22,7 @@ uniform vec3 u_color_b;
 uniform vec3 u_color_c;
 uniform vec3 u_bg;
 
-const int MAX_N = 160;
+const int MAX_N = 240;
 const float GOLDEN_ANGLE = 2.399963229728653;
 
 float hash31(vec3 p) {
@@ -107,7 +107,7 @@ void main() {
   float spin = t * (0.22 + thinkW * 0.10 + speakW * 0.05);
   float tilt = 0.42 + 0.05 * sin(t * 0.13 + prog);
 
-  int N = int(mix(96.0, 160.0, quality) + 0.5);
+  int N = int(mix(140.0, 240.0, quality) + 0.5);
   float nCount = float(N);
   float bound = radius * (1.0 + disp) * 1.55;
   if (length(uv) > bound) {
