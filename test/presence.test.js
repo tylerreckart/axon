@@ -5,7 +5,6 @@ import {
   modeWeights,
   defaultBands,
   simulatedEnvelope,
-  hexToRgb,
   GOTHAM,
   PLATO,
 } from "../web/js/presence.js";
@@ -84,18 +83,16 @@ describe("helpers", () => {
     assert.deepEqual(defaultBands(1), [1, 0.6, 0.3]);
   });
 
-  it("parses Gotham hex", () => {
-    const rgb = hexToRgb("#599cab");
-    assert.ok(Math.abs(rgb[0] - GOTHAM.colorA[0]) < 0.01);
+  it("exports Gotham as an optional palette", () => {
+    assert.ok(Math.abs(GOTHAM.colorA[0] - 0.349) < 0.01);
+    assert.ok(Math.abs(GOTHAM.colorC[0] - 0.929) < 0.01);
   });
 
   it("defaults to PLATO plasma", () => {
     const d = new PresenceDriver();
     assert.equal(d.palette, PLATO);
-    const rgb = hexToRgb("#ffffff");
-    assert.ok(Math.abs(rgb[0] - PLATO.colorA[0]) < 0.01);
-    assert.ok(Math.abs(rgb[1] - PLATO.colorA[1]) < 0.01);
-    assert.ok(Math.abs(rgb[2] - PLATO.colorA[2]) < 0.01);
+    assert.deepEqual(PLATO.colorA, [1, 1, 1]);
+    assert.deepEqual(PLATO.colorC, [1, 0.863, 0.627]);
   });
 
   it("returns a bounded simulated envelope", () => {

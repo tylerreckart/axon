@@ -16,33 +16,3 @@ export function parseSseBuffer(buffer) {
   }
   return { frames, rest };
 }
-
-export function parseSseData(data) {
-  if (!data) return null;
-  try {
-    return JSON.parse(data);
-  } catch {
-    return data;
-  }
-}
-
-/**
- * @param {Response} response fetch() of an Arbiter SSE endpoint
- * @param {{ ingestArbiterEvent: (name: string, payload?: unknown) => void }} driver
- */
-export async function consumeArbiterSSE(response, driver) {
-  if (!response.body) throw new Error("SSE response has no body");
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buf = "";
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    const parsed = parseSseBuffer(buf);
-    buf = parsed.rest;
-    for (const frame of parsed.frames) {
-      driver.ingestArbiterEvent(frame.event, parseSseData(frame.data));
-    }
-  }
-}
