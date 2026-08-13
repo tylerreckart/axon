@@ -8,10 +8,10 @@ the network. Hosts map voice + SSE onto this frame and upload it every draw.
 
 | Mode | When | Motion |
 |------|------|--------|
-| `idle` | No turn in flight | Slow breath, dim teal nucleus |
-| `listen` | Mic open / PTT held / VAD | Inward ripples, cooler cyan, amplitude-reactive |
-| `think` | STT done, waiting on Arbiter (and until first TTS chunk) | Spiral fold, orbiters, chaos from tool calls |
-| `speak` | TTS PCM (or model text if you have no audio yet) | Outward shockwaves, warmer amber, RMS-reactive |
+| `idle` | No turn in flight | Sparse plasma blob, slow phosphor breath |
+| `listen` | Mic open / PTT held / VAD | Tighter body, inbound dotted ripples |
+| `think` | STT done, waiting on Arbiter (and until first TTS chunk) | Edge particles scatter and orbit |
+| `speak` | TTS PCM (or model text if you have no audio yet) | Discrete concentric shells, hotter phosphor |
 
 Crossfades happen on the host (`PresenceDriver`). The shader receives a
 `vec4 u_weights` (idle, listen, think, speak) that should sum to ~1.
@@ -30,11 +30,11 @@ Packed identically for WebGL 2 (`uniform *`) and Metal (`ThoughtformUniforms`).
 | `u_progress` | float | 0..1 | Position in the current turn |
 | `u_attention` | float | 0..1 | How locked-on the presence feels |
 | `u_chaos` | float | 0..1 | Thinking turbulence (tool activity) |
-| `u_quality` | float | 0..1 | FBM octaves: 0.5 phone, 1.0 desktop |
-| `u_color_a` | vec3 | 0..1 | Primary (Gotham teal `#599cab`) |
-| `u_color_b` | vec3 | 0..1 | Secondary (pale cyan `#99d1ce`) |
-| `u_color_c` | vec3 | 0..1 | Speech accent (amber `#edb443`) |
-| `u_bg` | vec3 | 0..1 | Void (`#0c1014`) |
+| `u_quality` | float | 0..1 | Plasma cell density: 0.5 phone, 1.0 desktop |
+| `u_color_a` | vec3 | 0..1 | Plasma orange (`#ff6414`) |
+| `u_color_b` | vec3 | 0..1 | Hot phosphor (`#ffb45a`) |
+| `u_color_c` | vec3 | 0..1 | Peak (`#ffdca0`) |
+| `u_bg` | vec3 | 0..1 | Panel void (`#050200`) |
 
 Canonical JSON for the same frame is [`presence.schema.json`](presence.schema.json).
 
@@ -102,5 +102,5 @@ If you have no spectrum, set `bands = (amplitude, amplitude * 0.6, amplitude * 0
 
 ## Palette
 
-Default is Arbiter **Gotham**. Any host can override `u_color_*` / `u_bg`.
-Keep contrast high — the form is a luminous object on a near-black void.
+Default is **PLATO plasma** (amber cells on `#050200`). Pass Arbiter Gotham
+via `u_color_*` / `u_bg` if you want the TUI palette instead.

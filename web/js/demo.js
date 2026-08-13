@@ -132,7 +132,7 @@ async function main() {
 
   window.thoughtformSetMode = applyMode;
   window.thoughtformDriver = driver;
-  hud.status.textContent = "webgl2 · gotham";
+  hud.status.textContent = "webgl2 · plato";
 
   const loop = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000);

@@ -41,11 +41,11 @@ struct ThoughtformUniforms {
 }
 
 enum ThoughtformPalette {
-    static let gotham = (
-        colorA: SIMD4<Float>(0.349, 0.612, 0.671, 1),
-        colorB: SIMD4<Float>(0.600, 0.820, 0.808, 1),
-        colorC: SIMD4<Float>(0.929, 0.706, 0.263, 1),
-        background: SIMD4<Float>(0.047, 0.063, 0.078, 1)
+    static let plato = (
+        colorA: SIMD4<Float>(1.000, 0.392, 0.078, 1),
+        colorB: SIMD4<Float>(1.000, 0.706, 0.353, 1),
+        colorC: SIMD4<Float>(1.000, 0.863, 0.627, 1),
+        background: SIMD4<Float>(0.020, 0.008, 0.000, 1)
     )
 }
 
@@ -70,7 +70,7 @@ final class ThoughtformPresence: ObservableObject {
     private var targetAttention: Float = 0.15
     private var targetChaos: Float = 0
     private var chaosPulse: Float = 0
-    private var palette = ThoughtformPalette.gotham
+    private var palette = ThoughtformPalette.plato
 
     func setMode(_ mode: ThoughtformMode) {
         self.mode = mode
