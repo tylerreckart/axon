@@ -1,0 +1,56 @@
+{
+  "v": 1,
+  "title": "thoughtform presence frame",
+  "description": "Host-side state sent to the thoughtform shader each frame. JSON over WS/SSE or packed as GPU uniforms.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["v", "mode"],
+  "properties": {
+    "v": { "const": 1 },
+    "mode": {
+      "type": "string",
+      "enum": ["idle", "listen", "think", "speak"]
+    },
+    "amplitude": { "type": "number", "minimum": 0, "maximum": 1 },
+    "bands": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "progress": { "type": "number", "minimum": 0, "maximum": 1 },
+    "attention": { "type": "number", "minimum": 0, "maximum": 1 },
+    "chaos": { "type": "number", "minimum": 0, "maximum": 1 },
+    "quality": { "type": "number", "minimum": 0, "maximum": 1 },
+    "turn_id": { "type": "string" },
+    "transcript": { "type": "string" },
+    "arbiter_event": {
+      "type": "string",
+      "enum": [
+        "request_received",
+        "intent",
+        "stream_start",
+        "agent_start",
+        "text",
+        "tool_call",
+        "file",
+        "sub_agent_response",
+        "token_usage",
+        "advisor",
+        "escalation",
+        "stream_end",
+        "error",
+        "done"
+      ]
+    },
+    "palette": {
+      "type": "object",
+      "properties": {
+        "color_a": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "color_b": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "color_c": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "background": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+      }
+    }
+  }
+}
