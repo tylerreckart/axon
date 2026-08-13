@@ -2,7 +2,7 @@
 
 export const MODES = Object.freeze(["idle", "listen", "think", "speak"]);
 
-export const MODE_INDEX = Object.freeze({
+const MODE_INDEX = Object.freeze({
   idle: 0,
   listen: 1,
   think: 2,
@@ -64,12 +64,6 @@ function expSmooth(current, target, dt, tau) {
   if (tau <= 0) return target;
   const k = 1 - Math.exp(-Math.max(dt, 0) / tau);
   return lerp(current, target, k);
-}
-
-export function hexToRgb(hex) {
-  const h = String(hex).replace("#", "");
-  const n = parseInt(h, 16);
-  return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
 
 export function modeWeights(mode) {
@@ -186,18 +180,6 @@ export class PresenceDriver {
     ];
   }
 
-  setProgress(value) {
-    this._targetProgress = clamp01(value);
-  }
-
-  setAttention(value) {
-    this._targetAttention = clamp01(value);
-  }
-
-  setChaos(value) {
-    this._targetChaos = clamp01(value);
-  }
-
   /**
    * Map an Alfred client-side turn phase onto mode + optional metadata.
    * @param {{ phase: string, turnId?: string, transcript?: string }} turn
@@ -225,7 +207,7 @@ export class PresenceDriver {
    * Fold a native Arbiter SSE event name into chaos/progress.
    * @param {string|{event?: string, type?: string}} event
    */
-  ingestArbiterEvent(event, _payload) {
+  ingestArbiterEvent(event) {
     const name =
       typeof event === "string" ? event : event.event || event.type || "";
     const fx = ARBITER_EFFECTS[name];
@@ -318,5 +300,3 @@ export class PresenceDriver {
 function round4(x) {
   return Math.round(x * 10000) / 10000;
 }
-
-export { ALFRED_PHASE_MODE, ARBITER_EFFECTS };

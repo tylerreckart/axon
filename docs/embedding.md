@@ -11,18 +11,15 @@ already the iPhone browser path.
 ```js
 import { PresenceDriver } from "./web/js/presence.js";
 import { AxonRenderer, loadShaderSources } from "./web/js/renderer.js";
-import { AudioPresence } from "./web/js/audio.js";
 
 const sources = await loadShaderSources(""); // repo root, where /shaders lives
 const renderer = new AxonRenderer(canvas, sources);
 const driver = new PresenceDriver({ quality: 0.55 }); // phones
-const audio = new AudioPresence();
 
 driver.setMode("listen");
-await audio.enableMic();
+driver.setAudio({ rms: micRms, low, mid, high });
 
 function frame(now) {
-  driver.setAudio(audio.sample());
   renderer.resize(1.5);
   renderer.render(driver.tick(dt));
   requestAnimationFrame(frame);
@@ -78,13 +75,7 @@ presence.ingestAlfred(phase: .speaking)
 ## iOS via WKWebView
 
 If you do not want a Metal target, load `web/index.html` (from the bundle or a
-local server) in a full-screen `WKWebView`. Call into the page with
-
-```js
-window.axonSetMode("think")
-```
-
-once you expose a small bridge from `demo.js`. Native Metal is the lower-power
+local server) in a full-screen `WKWebView`. Native Metal is the lower-power
 path; WKWebView is the fastest way to share one shader with the website.
 
 ## Alfred (C++)
