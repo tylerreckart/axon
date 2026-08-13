@@ -1,5 +1,5 @@
 {
-  "name": "thoughtform",
+  "name": "axon",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,6 +7,6 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "python3 -m http.server 4173",
-    "test": "node --test test/presence.test.js && g++ -std=c++20 -I include test/thoughtform_header.cpp -o /tmp/thoughtform_header && /tmp/thoughtform_header"
+    "test": "node --test test/presence.test.js && g++ -std=c++20 -I include test/axon_header.cpp -o /tmp/axon_header && /tmp/axon_header"
   }
 }

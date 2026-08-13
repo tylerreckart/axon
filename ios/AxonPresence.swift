@@ -2,7 +2,7 @@ import Foundation
 import Combine
 import simd
 
-enum ThoughtformMode: String, CaseIterable {
+enum AxonMode: String, CaseIterable {
     case idle, listen, think, speak
 
     var weights: SIMD4<Float> {
@@ -18,7 +18,7 @@ enum ThoughtformMode: String, CaseIterable {
 enum AlfredPhase: String {
     case idle, recording, stt, thinking, speaking, done, cancelled
 
-    var mode: ThoughtformMode {
+    var mode: AxonMode {
         switch self {
         case .idle, .done: return .idle
         case .recording, .cancelled: return .listen
@@ -28,8 +28,8 @@ enum AlfredPhase: String {
     }
 }
 
-/// GPU uniform block — must match `ThoughtformUniforms` in shaders/thoughtform.metal.
-struct ThoughtformUniforms {
+/// GPU uniform block — must match `AxonUniforms` in shaders/axon.metal.
+struct AxonUniforms {
     var resolutionTimeAmplitude: SIMD4<Float>
     var weights: SIMD4<Float>
     var bandsProgress: SIMD4<Float>
@@ -40,17 +40,17 @@ struct ThoughtformUniforms {
     var background: SIMD4<Float>
 }
 
-enum ThoughtformPalette {
+enum AxonPalette {
     static let plato = (
-        colorA: SIMD4<Float>(1.000, 0.392, 0.078, 1),
-        colorB: SIMD4<Float>(1.000, 0.706, 0.353, 1),
+        colorA: SIMD4<Float>(1.000, 1.000, 1.000, 1),
+        colorB: SIMD4<Float>(1.000, 1.000, 1.000, 1),
         colorC: SIMD4<Float>(1.000, 0.863, 0.627, 1),
         background: SIMD4<Float>(0.020, 0.008, 0.000, 1)
     )
 }
 
-final class ThoughtformPresence: ObservableObject {
-    @Published private(set) var mode: ThoughtformMode = .idle
+final class AxonPresence: ObservableObject {
+    @Published private(set) var mode: AxonMode = .idle
 
     var quality: Float = 1
     var turnId: String?
@@ -70,9 +70,9 @@ final class ThoughtformPresence: ObservableObject {
     private var targetAttention: Float = 0.15
     private var targetChaos: Float = 0
     private var chaosPulse: Float = 0
-    private var palette = ThoughtformPalette.plato
+    private var palette = AxonPalette.plato
 
-    func setMode(_ mode: ThoughtformMode) {
+    func setMode(_ mode: AxonMode) {
         self.mode = mode
         switch mode {
         case .idle:
@@ -138,7 +138,7 @@ final class ThoughtformPresence: ObservableObject {
         targetBands = SIMD3(unit(low), unit(mid), unit(high))
     }
 
-    func tick(dt: Float, resolution: SIMD2<Float>) -> ThoughtformUniforms {
+    func tick(dt: Float, resolution: SIMD2<Float>) -> AxonUniforms {
         let step = min(max(dt, 0), 0.1)
         time += step
 
@@ -163,7 +163,7 @@ final class ThoughtformPresence: ObservableObject {
         let kAttn = 1 - exp(-step / 0.28)
         attention += (targetAttention - attention) * kAttn
 
-        return ThoughtformUniforms(
+        return AxonUniforms(
             resolutionTimeAmplitude: SIMD4(resolution.x, resolution.y, time, amplitude),
             weights: weights,
             bandsProgress: SIMD4(bands.x, bands.y, bands.z, progress),

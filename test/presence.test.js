@@ -92,9 +92,10 @@ describe("helpers", () => {
   it("defaults to PLATO plasma", () => {
     const d = new PresenceDriver();
     assert.equal(d.palette, PLATO);
-    const rgb = hexToRgb("#ff6414");
+    const rgb = hexToRgb("#ffffff");
     assert.ok(Math.abs(rgb[0] - PLATO.colorA[0]) < 0.01);
     assert.ok(Math.abs(rgb[1] - PLATO.colorA[1]) < 0.01);
+    assert.ok(Math.abs(rgb[2] - PLATO.colorA[2]) < 0.01);
   });
 
   it("returns a bounded simulated envelope", () => {

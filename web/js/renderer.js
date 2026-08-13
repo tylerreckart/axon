@@ -29,11 +29,11 @@ function compile(gl, type, source, label) {
 export async function loadShaderSources(base = "") {
   const prefix = base.replace(/\/$/, "");
   const [vert, frag] = await Promise.all([
-    fetch(`${prefix}/shaders/thoughtform.vert.glsl`).then((r) => {
+    fetch(`${prefix}/shaders/axon.vert.glsl`).then((r) => {
       if (!r.ok) throw new Error(`failed to load vertex shader (${r.status})`);
       return r.text();
     }),
-    fetch(`${prefix}/shaders/thoughtform.frag.glsl`).then((r) => {
+    fetch(`${prefix}/shaders/axon.frag.glsl`).then((r) => {
       if (!r.ok) throw new Error(`failed to load fragment shader (${r.status})`);
       return r.text();
     }),
@@ -41,7 +41,7 @@ export async function loadShaderSources(base = "") {
   return { vert, frag };
 }
 
-export class ThoughtformRenderer {
+export class AxonRenderer {
   /**
    * @param {HTMLCanvasElement} canvas
    * @param {{vert: string, frag: string}} sources

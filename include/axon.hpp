@@ -8,7 +8,7 @@
 #include <optional>
 #include <string_view>
 
-namespace thoughtform {
+namespace axon {
 
 // Presence modes — keep in lockstep with web/js/presence.js and docs/protocol.md.
 enum class Mode : std::uint8_t { Idle = 0, Listen = 1, Think = 2, Speak = 3 };
@@ -26,8 +26,8 @@ struct Frame {
   float attention = 0.15f;
   float chaos = 0.f;
   float quality = 1.f;
-  float color_a[3] = {1.000f, 0.392f, 0.078f};  // PLATO plasma #ff6414
-  float color_b[3] = {1.000f, 0.706f, 0.353f};  // #ffb45a
+  float color_a[3] = {1.000f, 1.000f, 1.000f};  // PLATO plasma #ffffff
+  float color_b[3] = {1.000f, 1.000f, 1.000f};  // #ffffff
   float color_c[3] = {1.000f, 0.863f, 0.627f};  // #ffdca0
   float background[3] = {0.020f, 0.008f, 0.000f};  // #050200
 };
@@ -78,4 +78,4 @@ inline float rms_s16le(const std::uint8_t* data, std::size_t len) {
   return clamp01(static_cast<float>(std::sqrt(acc / static_cast<double>(n)) * 2.4));
 }
 
-}  // namespace thoughtform
+}  // namespace axon

@@ -2,8 +2,8 @@ import SwiftUI
 import UIKit
 import MetalKit
 
-struct ThoughtformView: UIViewRepresentable {
-    @ObservedObject var presence: ThoughtformPresence
+struct AxonView: UIViewRepresentable {
+    @ObservedObject var presence: AxonPresence
 
     func makeCoordinator() -> Coordinator {
         Coordinator(presence: presence)
@@ -27,13 +27,13 @@ struct ThoughtformView: UIViewRepresentable {
 
     final class Coordinator {
         let device: MTLDevice
-        let renderer: ThoughtformRenderer
+        let renderer: AxonRenderer
 
-        init(presence: ThoughtformPresence) {
+        init(presence: AxonPresence) {
             guard let device = MTLCreateSystemDefaultDevice(),
-                  let renderer = ThoughtformRenderer(device: device, presence: presence)
+                  let renderer = AxonRenderer(device: device, presence: presence)
             else {
-                fatalError("thoughtform: Metal is required")
+                fatalError("axon: Metal is required")
             }
             self.device = device
             self.renderer = renderer
@@ -42,5 +42,5 @@ struct ThoughtformView: UIViewRepresentable {
 }
 
 #if os(macOS)
-#error("ThoughtformView is UIKit-hosted; wrap MTKView in NSViewRepresentable for Mac.")
+#error("AxonView is UIKit-hosted; wrap MTKView in NSViewRepresentable for Mac.")
 #endif

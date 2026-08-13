@@ -1,11 +1,11 @@
 #include <metal_stdlib>
 using namespace metal;
 
-// thoughtform — Alfred presence shader (Metal)
-// Contained Siri-like blob, rendered as a PLATO plasma-cell particle field.
-// Keep math in lockstep with shaders/thoughtform.frag.glsl.
+// axon — Alfred presence shader (Metal)
+// A small, friendly presence. Soft PLATO orb that reads on a phone
+// or a tiny OLED. Keep math in lockstep with shaders/axon.frag.glsl.
 
-struct ThoughtformUniforms {
+struct AxonUniforms {
   float4 resolutionTimeAmplitude; // xy = resolution, z = time, w = amplitude
   float4 weights;                 // idle, listen, think, speak
   float4 bandsProgress;           // xyz = low/mid/high, w = progress
@@ -20,7 +20,7 @@ struct VertexOut {
   float4 position [[position]];
 };
 
-vertex VertexOut thoughtform_vertex(uint vertexID [[vertex_id]]) {
+vertex VertexOut axon_vertex(uint vertexID [[vertex_id]]) {
   float2 pos = float2(float((vertexID << 1) & 2), float(vertexID & 2));
   VertexOut out;
   out.position = float4(pos * 2.0 - 1.0, 0.0, 1.0);
@@ -44,8 +44,8 @@ float vnoise(float2 p) {
   return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-fragment float4 thoughtform_fragment(VertexOut in [[stage_in]],
-                                    constant ThoughtformUniforms &u [[buffer(0)]]) {
+fragment float4 axon_fragment(VertexOut in [[stage_in]],
+                                    constant AxonUniforms &u [[buffer(0)]]) {
   float2 fragCoord = in.position.xy;
   float2 res = max(u.resolutionTimeAmplitude.xy, float2(1.0));
   float2 uv = (fragCoord - 0.5 * res) / min(res.x, res.y);
@@ -64,107 +64,71 @@ fragment float4 thoughtform_fragment(VertexOut in [[stage_in]],
   float chaos = saturate(u.attentionChaosQuality.y);
   float attn = saturate(u.attentionChaosQuality.x);
   float prog = saturate(u.bandsProgress.w);
+  float quality = saturate(u.attentionChaosQuality.z);
 
-  float breathHz = mix(0.28, 0.7, listenW) + speakW * (1.15 + amp * 1.8);
-  float breath = sin(t * breathHz * 6.28318);
+  float breathHz = mix(0.14, 0.22, listenW) + speakW * 0.18;
+  float breath = 0.55 * sin(t * breathHz * 6.28318)
+    + 0.30 * sin(t * breathHz * 2.15 + 1.1)
+    + 0.15 * sin(t * breathHz * 0.73 + 2.4);
 
-  float radius = 0.33
-    + 0.018 * breath * (0.7 * idleW + listenW + 0.4 * thinkW + speakW)
-    + 0.05 * amp * (listenW + speakW)
-    + 0.03 * low
-    + 0.02 * attn
-    - 0.025 * thinkW;
+  float radius = 0.34
+    + 0.018 * breath
+    + 0.016 * amp * (0.55 * listenW + speakW)
+    + 0.012 * attn
+    + 0.008 * low
+    - 0.018 * thinkW;
 
-  float cells = mix(96.0, 148.0, saturate(u.attentionChaosQuality.z));
-  float2 grid = uv * cells;
-  float2 cellId = floor(grid);
-  float2 cellF = fract(grid);
-  float2 cellUV = (cellId + 0.5) / cells;
+  float2 p = uv / max(radius, 0.04);
+  p += 0.018 * float2(sin(t * 0.27 + 0.4), cos(t * 0.23 + 1.2));
+  float ang = atan2(p.y, p.x);
+  float rd = length(p);
 
-  float id = hash21(cellId);
-  float id2 = hash21(cellId + 19.7);
+  float warp = 0.038 * sin(ang * 2.0 + t * 0.20)
+    + 0.024 * sin(ang * 3.0 - t * 0.15 + breath)
+    + 0.014 * sin(ang * 5.0 + t * 0.11 + prog * 6.28318)
+    + speakW * (0.028 + 0.045 * amp) * sin(ang * 2.0 + t * 1.05)
+    + thinkW * (0.04 + 0.05 * chaos) * (vnoise(p * 1.7 + t * 0.06) - 0.5);
+  float sd = rd / max(1.0 + warp, 0.72);
 
-  float dist0 = length(cellUV);
-  float scatter = pow(saturate(dist0 / max(radius, 0.05)), 2.2);
-  float scatterAmt = scatter * (0.045 + 0.16 * thinkW + 0.10 * chaos + 0.05 * speakW);
-  scatterAmt *= mix(1.0, 0.35, listenW);
-  float2 dir = cellUV / max(dist0, 1e-4);
-  float spin = thinkW * (0.55 + chaos) * (t * 0.35 + id * 6.28318);
-  float csp = cos(spin);
-  float ssp = sin(spin);
-  float2 scatterDir = float2(dir.x * csp - dir.y * ssp, dir.x * ssp + dir.y * csp);
-  float2 sampleUV = cellUV + scatterDir * scatterAmt * (id - 0.32);
+  float halo = exp(-sd * sd * 3.4);
+  float body = exp(-sd * sd * mix(5.4, 6.4, thinkW));
+  float core = exp(-sd * sd * 9.5);
 
-  float pa = atan2(sampleUV.y, sampleUV.x);
-  float pr = length(sampleUV);
-  pa += t * (0.05 * idleW + 0.18 * thinkW * (0.4 + chaos) - 0.12 * listenW);
-  pr += listenW * (-0.025 * fract(t * 0.45 + id));
-  sampleUV = float2(cos(pa), sin(pa)) * pr;
+  float lum = idleW * 0.62 + listenW * 0.90 + thinkW * 0.72 + speakW * 1.04;
+  lum += (0.14 * listenW + 0.18 * speakW) * amp;
+  lum += 0.08 * breath;
 
-  float dist = length(sampleUV);
-  float a = atan2(sampleUV.y, sampleUV.x);
-
-  float blob = radius
-    * (1.0
-      + 0.045 * sin(a * 3.0 + t * 0.55)
-      + 0.025 * sin(a * 5.0 - t * 0.4 + prog * 6.28318)
-      + 0.04 * thinkW * (vnoise(sampleUV * 3.2 + t * 0.2) - 0.5));
-
-  float core = saturate(1.0 - dist / max(blob, 0.04));
-  float fill = mix(0.72, 0.95, listenW)
-    * mix(1.0, 0.62 + 0.28 * chaos, thinkW)
-    * mix(1.0, 0.88 + 0.28 * amp, speakW)
-    * mix(1.0, 0.82, idleW * (1.0 - attn));
-  float density = pow(core, mix(0.65, 1.15, thinkW)) * fill;
-  density *= 0.78 + 0.22 * vnoise(sampleUV * 5.0 + float2(t * 0.15, mid));
-
-  float wave = abs(fract(dist / max(blob, 0.04) - t * (0.55 + amp * 0.7)) - 0.12);
-  float speakShell = speakW * (0.22 + 0.55 * amp) * step(wave, 1.6 / cells * 8.0) * core;
-  density += speakShell;
-
-  float inWave = abs(fract((blob - dist) / max(blob, 0.04) + t * 0.5) - 0.15);
-  density += listenW * (0.12 + 0.35 * amp) * step(inWave, 2.2 / cells * 8.0) * core;
-
-  float halo = smoothstep(blob * 1.75, blob * 0.95, dist) * smoothstep(blob * 0.7, blob * 1.05, dist);
-  float stray = (0.018 + 0.07 * thinkW + 0.045 * chaos + 0.03 * speakW * amp) * halo;
-  density = max(density, stray);
-
-  float flickRate = mix(7.0, 16.0, high);
-  float flick = 0.78 + 0.22 * hash21(cellId + floor(t * flickRate));
-  density *= flick;
-
-  float lit = step(id, saturate(density));
-  float halfLit = step(id2, saturate(density * 0.45)) * (1.0 - lit);
-  float intensity = lit * (0.42 + 0.58 * pow(core, 0.55))
-    + halfLit * 0.22 * core;
-  intensity *= 0.55 + 0.45 * (idleW * 0.75 + listenW + thinkW * 0.85 + speakW);
-  intensity += lit * speakW * amp * 0.35 * core;
-  intensity += lit * listenW * amp * 0.2 * core;
-
-  float levels = 5.0;
-  intensity = floor(intensity * levels + 0.0001) / levels;
-
-  float2 cf = cellF - 0.5;
-  float box = max(abs(cf.x), abs(cf.y));
-  float pixel = 1.0 - step(0.36, box);
-  float glow = exp(-box * 8.5) * 0.55;
-  float cellMask = mix(glow, pixel + glow * 0.35, 0.85);
-
-  float dust = step(hash21(cellId + 91.0), 0.0035) * 0.12;
+  float attend = listenW * (0.07 + 0.16 * amp)
+    * exp(-abs(sd - (0.55 + 0.18 * sin(t * 1.35))) * 6.5);
+  float voice = speakW * amp * body * 0.18;
 
   float3 colorA = u.colorA.xyz;
   float3 colorB = u.colorB.xyz;
   float3 colorC = u.colorC.xyz;
   float3 background = u.background.xyz;
 
-  float3 plasma = mix(colorA, colorB, saturate(intensity * 1.15 + speakW * amp * 0.25));
-  plasma = mix(plasma, colorC, speakW * amp * lit * core * 0.45);
-  plasma *= 1.0 - thinkW * 0.12 * (1.0 - core);
+  float swirl = 0.5 + 0.5 * sin(ang + t * 0.19);
+  float mottling = vnoise(p * 1.6 + float2(t * 0.06, 0.3));
+  float ab = saturate(0.28 + 0.40 * sd + 0.18 * swirl + 0.14 * mottling);
+  float bc = saturate(0.15 + 0.70 * core + 0.15 * sin(ang * 2.0 - t * 0.23));
+  float3 plasma = mix(colorA, colorB, ab);
+  float3 hot = mix(colorB, colorC, bc);
 
   float3 col = background;
-  col += plasma * intensity * cellMask;
-  col += plasma * dust;
-  col += colorB * lit * pixel * pow(core, 4.0) * 0.35;
+  col += mix(colorA, plasma, 0.55) * halo * 0.05 * lum;
+  col += plasma * body * 0.82 * lum;
+  col += hot * core * 0.55 * lum;
+  col += colorB * attend;
+  col += hot * voice;
+
+  float2 glintP = p - float2(-0.16, 0.20);
+  col += colorC * exp(-dot(glintP, glintP) * 16.0) * 0.20 * lum;
+
+  float lit = saturate(dot(col - background, float3(0.33)));
+  float g1 = hash21(fragCoord * 0.91 + float2(t * 1.6, 2.1)) - 0.5;
+  float g2 = hash21(fragCoord * 1.73 + float2(t * 2.2, 8.4)) - 0.5;
+  float grain = g1 * 0.65 + g2 * 0.35;
+  col += grain * mix(0.045, 0.075, quality) * mix(0.4, 1.0, lit) * plasma;
 
   return float4(saturate(col), 1.0);
 }

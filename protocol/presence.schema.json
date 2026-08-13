@@ -1,7 +1,7 @@
 {
   "v": 1,
-  "title": "thoughtform presence frame",
-  "description": "Host-side state sent to the thoughtform shader each frame. JSON over WS/SSE or packed as GPU uniforms.",
+  "title": "axon presence frame",
+  "description": "Host-side state sent to the axon shader each frame. JSON over WS/SSE or packed as GPU uniforms.",
   "type": "object",
   "additionalProperties": false,
   "required": ["v", "mode"],
