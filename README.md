@@ -1,7 +1,6 @@
 # axon
 
-A **presence shader** for [Alfred](https://github.com/tylerreckart/alfred) and
-[Arbiter](https://github.com/tylerreckart/arbiter).
+A **presence shader** for [Alfred](https://github.com/tylerreckart/alfred) and [Arbiter](https://github.com/tylerreckart/arbiter).
 
 ```
 mic / PTT ──► listen ──► STT ──► think (Arbiter SSE) ──► speak (TTS PCM) ──► idle
@@ -12,7 +11,7 @@ mic / PTT ──► listen ──► STT ──► think (Arbiter SSE) ──►
 ## Modes
 
 | Mode | State |
-|------|---------------|
+|------|-------|
 | `idle` | waiting |
 | `listen` | mic open / PTT |
 | `think` | STT + Arbiter run |

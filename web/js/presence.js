@@ -9,12 +9,12 @@ const MODE_INDEX = Object.freeze({
   speak: 3,
 });
 
-/** PLATO plasma — white body, warm phosphor core, near-black void. Default. */
+/** White on black. Default. */
 export const PLATO = Object.freeze({
   colorA: Object.freeze([1.0, 1.0, 1.0]), // #ffffff
   colorB: Object.freeze([1.0, 1.0, 1.0]), // #ffffff
-  colorC: Object.freeze([1.0, 0.863, 0.627]), // #ffdca0
-  background: Object.freeze([0.02, 0.008, 0.0]), // #050200
+  colorC: Object.freeze([1.0, 1.0, 1.0]), // #ffffff
+  background: Object.freeze([0.0, 0.0, 0.0]), // #000000
 });
 
 /** Arbiter Gotham — optional override. */
