@@ -26,10 +26,10 @@ struct Frame {
   float attention = 0.15f;
   float chaos = 0.f;
   float quality = 1.f;
-  float color_a[3] = {1.000f, 1.000f, 1.000f};  // PLATO plasma #ffffff
+  float color_a[3] = {1.000f, 1.000f, 1.000f};  // #ffffff
   float color_b[3] = {1.000f, 1.000f, 1.000f};  // #ffffff
-  float color_c[3] = {1.000f, 0.863f, 0.627f};  // #ffdca0
-  float background[3] = {0.020f, 0.008f, 0.000f};  // #050200
+  float color_c[3] = {1.000f, 1.000f, 1.000f};  // #ffffff
+  float background[3] = {0.000f, 0.000f, 0.000f};  // #000000
 };
 
 inline float clamp01(float x) { return std::min(1.f, std::max(0.f, x)); }

@@ -87,7 +87,7 @@ export class AxonRenderer {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 2]), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 1, gl.FLOAT, false, 0, 0);
-    gl.clearColor(0.02, 0.008, 0.0, 1);
+    gl.clearColor(0, 0, 0, 1);
   }
 
   resize(dprCap = 2) {

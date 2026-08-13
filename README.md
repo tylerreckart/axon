@@ -1,7 +1,7 @@
 # axon
 
 A **presence shader** for [Alfred](https://github.com/tylerreckart/alfred) and
-[Arbiter](https://github.com/tylerreckart/arbiter). A small, friendly orb —
+[Arbiter](https://github.com/tylerreckart/arbiter). A small particle blob —
 always there, ready — that reads on a phone or a tiny OLED.
 
 GLSL ES 3.00 (WebGL 2) is the canonical source — it runs in **Safari on iOS**
@@ -18,10 +18,10 @@ mic / PTT ──► listen ──► STT ──► think (Arbiter SSE) ──►
 
 | Mode | Alfred moment | Look |
 |------|---------------|------|
-| `idle` | waiting | Quiet warm glow, slow breath |
-| `listen` | mic open / PTT | Brighter, attentive inward pulse |
-| `think` | STT + Arbiter run | A little tighter, slightly irregular |
-| `speak` | TTS chunks | Follows the voice |
+| `idle` | waiting | Slow-spinning particle blob, quiet breath |
+| `listen` | mic open / PTT | Tighter mesh, brighter, more coherent |
+| `think` | STT + Arbiter run | Stronger noise, scattered strays |
+| `speak` | TTS chunks | Mesh pulses with the voice |
 
 The shader never talks to the network. Hosts map Alfred’s turn pipeline and
 Arbiter’s SSE catalog onto the [presence protocol](docs/protocol.md).
@@ -67,9 +67,8 @@ overlap. See [embedding](docs/embedding.md).
 
 ## Palette
 
-Defaults are **PLATO plasma**: void `#050200`, body `#ffffff`, warm core
-`#ffdca0`. Override `u_color_*` / `u_bg` (Arbiter Gotham is still exported
-from `presence.js`).
+Default palette is **white on black**. Override `u_color_*` / `u_bg` (Arbiter
+Gotham is still exported from `presence.js`).
 
 ## License
 

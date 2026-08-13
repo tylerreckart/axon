@@ -44,8 +44,8 @@ enum AxonPalette {
     static let plato = (
         colorA: SIMD4<Float>(1.000, 1.000, 1.000, 1),
         colorB: SIMD4<Float>(1.000, 1.000, 1.000, 1),
-        colorC: SIMD4<Float>(1.000, 0.863, 0.627, 1),
-        background: SIMD4<Float>(0.020, 0.008, 0.000, 1)
+        colorC: SIMD4<Float>(1.000, 1.000, 1.000, 1),
+        background: SIMD4<Float>(0.000, 0.000, 0.000, 1)
     )
 }
 

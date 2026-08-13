@@ -8,10 +8,10 @@ the network. Hosts map voice + SSE onto this frame and upload it every draw.
 
 | Mode | When | Motion |
 |------|------|--------|
-| `idle` | No turn in flight | Sparse plasma blob, slow phosphor breath |
-| `listen` | Mic open / PTT held / VAD | Tighter body, inbound dotted ripples |
-| `think` | STT done, waiting on Arbiter (and until first TTS chunk) | Edge particles scatter and orbit |
-| `speak` | TTS PCM (or model text if you have no audio yet) | Discrete concentric shells, hotter phosphor |
+| `idle` | No turn in flight | Slow-spinning particle blob, quiet breath |
+| `listen` | Mic open / PTT held / VAD | Tighter mesh, brighter, more coherent |
+| `think` | STT done, waiting on Arbiter (and until first TTS chunk) | Stronger noise, scattered strays |
+| `speak` | TTS PCM (or model text if you have no audio yet) | Mesh pulses with the voice |
 
 Crossfades happen on the host (`PresenceDriver`). The shader receives a
 `vec4 u_weights` (idle, listen, think, speak) that should sum to ~1.
@@ -31,10 +31,10 @@ Packed identically for WebGL 2 (`uniform *`) and Metal (`AxonUniforms`).
 | `u_attention` | float | 0..1 | How locked-on the presence feels |
 | `u_chaos` | float | 0..1 | Thinking turbulence (tool activity) |
 | `u_quality` | float | 0..1 | Plasma cell density: 0.5 phone, 1.0 desktop |
-| `u_color_a` | vec3 | 0..1 | Plasma body (`#ffffff`) |
-| `u_color_b` | vec3 | 0..1 | Plasma mid (`#ffffff`) |
-| `u_color_c` | vec3 | 0..1 | Warm core (`#ffdca0`) |
-| `u_bg` | vec3 | 0..1 | Panel void (`#050200`) |
+| `u_color_a` | vec3 | 0..1 | Particle body (`#ffffff`) |
+| `u_color_b` | vec3 | 0..1 | Particle mid (`#ffffff`) |
+| `u_color_c` | vec3 | 0..1 | Particle peak (`#ffffff`) |
+| `u_bg` | vec3 | 0..1 | Void (`#000000`) |
 
 Canonical JSON for the same frame is [`presence.schema.json`](presence.schema.json).
 
@@ -102,5 +102,5 @@ If you have no spectrum, set `bands = (amplitude, amplitude * 0.6, amplitude * 0
 
 ## Palette
 
-Default is **PLATO plasma** (white body, warm core `#ffdca0` on `#050200`). Pass Arbiter Gotham
-via `u_color_*` / `u_bg` if you want the TUI palette instead.
+Default is **white on black**. Pass Arbiter Gotham via `u_color_*` / `u_bg`
+if you want the TUI palette instead.

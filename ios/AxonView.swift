@@ -18,8 +18,8 @@ struct AxonView: UIViewRepresentable {
         view.enableSetNeedsDisplay = false
         view.preferredFramesPerSecond = 60
         view.colorPixelFormat = .bgra8Unorm
-        view.clearColor = MTLClearColor(red: 0.02, green: 0.008, blue: 0.0, alpha: 1)
-        view.backgroundColor = UIColor(red: 0.02, green: 0.008, blue: 0.0, alpha: 1)
+        view.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        view.backgroundColor = UIColor.black
         return view
     }
 

@@ -88,11 +88,12 @@ describe("helpers", () => {
     assert.ok(Math.abs(GOTHAM.colorC[0] - 0.929) < 0.01);
   });
 
-  it("defaults to PLATO plasma", () => {
+  it("defaults to white on black", () => {
     const d = new PresenceDriver();
     assert.equal(d.palette, PLATO);
     assert.deepEqual(PLATO.colorA, [1, 1, 1]);
-    assert.deepEqual(PLATO.colorC, [1, 0.863, 0.627]);
+    assert.deepEqual(PLATO.colorC, [1, 1, 1]);
+    assert.deepEqual(PLATO.background, [0, 0, 0]);
   });
 
   it("returns a bounded simulated envelope", () => {
