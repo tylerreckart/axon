@@ -9,7 +9,15 @@ export const MODE_INDEX = Object.freeze({
   speak: 3,
 });
 
-/** Arbiter Gotham — matches themes/gotham.json. */
+/** PLATO plasma — amber cells on a near-black panel. Default. */
+export const PLATO = Object.freeze({
+  colorA: Object.freeze([1.0, 0.392, 0.078]), // #ff6414
+  colorB: Object.freeze([1.0, 0.706, 0.353]), // #ffb45a
+  colorC: Object.freeze([1.0, 0.863, 0.627]), // #ffdca0
+  background: Object.freeze([0.02, 0.008, 0.0]), // #050200
+});
+
+/** Arbiter Gotham — optional override. */
 export const GOTHAM = Object.freeze({
   colorA: Object.freeze([0.349, 0.612, 0.671]), // #599cab
   colorB: Object.freeze([0.6, 0.82, 0.808]), // #99d1ce
@@ -114,7 +122,7 @@ export class PresenceDriver {
    * @param {number} [opts.audioTau=0.06]
    * @param {number} [opts.chaosTau=0.45]
    * @param {number} [opts.quality=1]
-   * @param {typeof GOTHAM} [opts.palette]
+   * @param {typeof PLATO} [opts.palette]
    */
   constructor(opts = {}) {
     this.modeTau = opts.modeTau ?? 0.22;
@@ -123,7 +131,7 @@ export class PresenceDriver {
     this.progressTau = opts.progressTau ?? 0.35;
     this.attentionTau = opts.attentionTau ?? 0.28;
     this.quality = clamp01(opts.quality ?? 1);
-    this.palette = opts.palette ?? GOTHAM;
+    this.palette = opts.palette ?? PLATO;
 
     this.targetMode = "idle";
     this.weights = [1, 0, 0, 0];

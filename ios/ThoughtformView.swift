@@ -18,8 +18,8 @@ struct ThoughtformView: UIViewRepresentable {
         view.enableSetNeedsDisplay = false
         view.preferredFramesPerSecond = 60
         view.colorPixelFormat = .bgra8Unorm
-        view.clearColor = MTLClearColor(red: 0.047, green: 0.063, blue: 0.078, alpha: 1)
-        view.backgroundColor = UIColor(red: 0.047, green: 0.063, blue: 0.078, alpha: 1)
+        view.clearColor = MTLClearColor(red: 0.02, green: 0.008, blue: 0.0, alpha: 1)
+        view.backgroundColor = UIColor(red: 0.02, green: 0.008, blue: 0.0, alpha: 1)
         return view
     }
 

@@ -7,6 +7,7 @@ import {
   simulatedEnvelope,
   hexToRgb,
   GOTHAM,
+  PLATO,
 } from "../web/js/presence.js";
 import { parseSseBuffer } from "../web/js/sse.js";
 
@@ -86,6 +87,14 @@ describe("helpers", () => {
   it("parses Gotham hex", () => {
     const rgb = hexToRgb("#599cab");
     assert.ok(Math.abs(rgb[0] - GOTHAM.colorA[0]) < 0.01);
+  });
+
+  it("defaults to PLATO plasma", () => {
+    const d = new PresenceDriver();
+    assert.equal(d.palette, PLATO);
+    const rgb = hexToRgb("#ff6414");
+    assert.ok(Math.abs(rgb[0] - PLATO.colorA[0]) < 0.01);
+    assert.ok(Math.abs(rgb[1] - PLATO.colorA[1]) < 0.01);
   });
 
   it("returns a bounded simulated envelope", () => {

@@ -1,8 +1,8 @@
 # thoughtform
 
 A **presence shader** for [Alfred](https://github.com/tylerreckart/alfred) and
-[Arbiter](https://github.com/tylerreckart/arbiter). One visual, driven by a
-small uniform block, that listens, thinks, and speaks with the user.
+[Arbiter](https://github.com/tylerreckart/arbiter). A contained Siri-like blob
+rendered as degrading PLATO plasma pixels — idle, listen, think, speak.
 
 GLSL ES 3.00 (WebGL 2) is the canonical source — it runs in **Safari on iOS**
 and every current desktop browser. A Metal port of the same math is the native
@@ -18,10 +18,10 @@ mic / PTT ──► listen ──► STT ──► think (Arbiter SSE) ──►
 
 | Mode | Alfred moment | Look |
 |------|---------------|------|
-| `idle` | waiting | Slow breath, dim Gotham teal |
-| `listen` | mic open / PTT | Inward ripples, cooler cyan, mic RMS |
-| `think` | STT + Arbiter run | Spiral fold, orbiters, tool-call turbulence |
-| `speak` | TTS chunks | Outward shockwaves, amber lift, playback RMS |
+| `idle` | waiting | Sparse amber blob, phosphor flicker |
+| `listen` | mic open / PTT | Tighter body, inbound dotted ripples |
+| `think` | STT + Arbiter run | Edge particles scatter and orbit |
+| `speak` | TTS chunks | Discrete concentric shells, hotter phosphor |
 
 The shader never talks to the network. Hosts map Alfred’s turn pipeline and
 Arbiter’s SSE catalog onto the [presence protocol](docs/protocol.md).
@@ -68,8 +68,9 @@ overlap. See [embedding](docs/embedding.md).
 
 ## Palette
 
-Defaults are Arbiter **Gotham**: void `#0c1014`, teal `#599cab`, pale cyan
-`#99d1ce`, speech amber `#edb443`. Override `u_color_*` / `u_bg` per host.
+Defaults are **PLATO plasma**: void `#050200`, orange `#ff6414`, hot phosphor
+`#ffb45a`, peak `#ffdca0`. Override `u_color_*` / `u_bg` (Arbiter Gotham is
+still exported from `presence.js`).
 
 ## License
 

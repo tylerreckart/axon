@@ -1,11 +1,11 @@
 :root {
-  --bg: #0c1014;
-  --panel: #11151c;
-  --text: #99d1ce;
-  --muted: #599cab;
-  --dim: #0a3749;
-  --accent: #599cab;
-  --amber: #edb443;
+  --bg: #050200;
+  --panel: #120800;
+  --text: #ffb45a;
+  --muted: #ff6414;
+  --dim: #6a2e0a;
+  --accent: #ff6414;
+  --amber: #ffdca0;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
 }
@@ -83,7 +83,7 @@ body {
   right: 0;
   bottom: 0;
   padding: 12px 16px calc(16px + var(--safe-b));
-  background: linear-gradient(transparent, rgba(12, 16, 20, 0.92) 36%);
+  background: linear-gradient(transparent, rgba(5, 2, 0, 0.94) 36%);
   z-index: 2;
 }
 
