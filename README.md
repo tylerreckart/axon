@@ -1,4 +1,4 @@
-# thoughtform
+# axon
 
 A **presence shader** for [Alfred](https://github.com/tylerreckart/alfred) and
 [Arbiter](https://github.com/tylerreckart/arbiter). One visual, driven by a
