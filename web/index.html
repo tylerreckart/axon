@@ -5,43 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#050200" />
-    <title>thoughtform</title>
-    <link rel="stylesheet" href="css/thoughtform.css" />
+    <title>axon</title>
+    <link rel="stylesheet" href="css/axon.css" />
   </head>
   <body>
-    <canvas id="presence" aria-label="Alfred presence"></canvas>
-
-    <header class="chrome">
-      <div class="wordmark">thoughtform</div>
-      <div id="status" class="status">boot</div>
-    </header>
-
-    <aside class="protocol" aria-label="presence frame">
-      <pre id="protocol-json">{}</pre>
-    </aside>
-
-    <footer class="hud">
-      <div class="readout">
-        <span class="k">mode</span>
-        <span id="mode-label" class="v">idle</span>
-        <span class="k">turn</span>
-        <span id="turn-label" class="v">—</span>
-        <span class="k">amp</span>
-        <span id="meter-amp" class="meter"></span>
-        <span class="k">chaos</span>
-        <span id="meter-chaos" class="meter"></span>
-      </div>
-      <div class="controls" role="group" aria-label="presence mode">
-        <button type="button" data-mode="idle">idle</button>
-        <button type="button" data-mode="listen">listen</button>
-        <button type="button" data-mode="think">think</button>
-        <button type="button" data-mode="speak">speak</button>
-        <button type="button" id="mic">mic</button>
-        <button type="button" id="auto">auto</button>
-      </div>
-      <p class="hint">1–4 modes · m mic · a auto-turn</p>
-    </footer>
-
+    <canvas id="presence" aria-label="axon presence"></canvas>
     <script type="module" src="js/demo.js"></script>
   </body>
 </html>

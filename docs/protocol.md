@@ -1,6 +1,6 @@
 # Presence protocol
 
-thoughtform is a **presence shader**: one visual, driven by a small uniform
+axon is a **presence shader**: one visual, driven by a small uniform
 block, that any Alfred / Arbiter host can animate. The shader never talks to
 the network. Hosts map voice + SSE onto this frame and upload it every draw.
 
@@ -18,7 +18,7 @@ Crossfades happen on the host (`PresenceDriver`). The shader receives a
 
 ## Uniforms
 
-Packed identically for WebGL 2 (`uniform *`) and Metal (`ThoughtformUniforms`).
+Packed identically for WebGL 2 (`uniform *`) and Metal (`AxonUniforms`).
 
 | Name | Type | Range | Meaning |
 |------|------|-------|---------|
@@ -31,9 +31,9 @@ Packed identically for WebGL 2 (`uniform *`) and Metal (`ThoughtformUniforms`).
 | `u_attention` | float | 0..1 | How locked-on the presence feels |
 | `u_chaos` | float | 0..1 | Thinking turbulence (tool activity) |
 | `u_quality` | float | 0..1 | Plasma cell density: 0.5 phone, 1.0 desktop |
-| `u_color_a` | vec3 | 0..1 | Plasma orange (`#ff6414`) |
-| `u_color_b` | vec3 | 0..1 | Hot phosphor (`#ffb45a`) |
-| `u_color_c` | vec3 | 0..1 | Peak (`#ffdca0`) |
+| `u_color_a` | vec3 | 0..1 | Plasma body (`#ffffff`) |
+| `u_color_b` | vec3 | 0..1 | Plasma mid (`#ffffff`) |
+| `u_color_c` | vec3 | 0..1 | Warm core (`#ffdca0`) |
 | `u_bg` | vec3 | 0..1 | Panel void (`#050200`) |
 
 Canonical JSON for the same frame is [`presence.schema.json`](presence.schema.json).
@@ -102,5 +102,5 @@ If you have no spectrum, set `bands = (amplitude, amplitude * 0.6, amplitude * 0
 
 ## Palette
 
-Default is **PLATO plasma** (amber cells on `#050200`). Pass Arbiter Gotham
+Default is **PLATO plasma** (white body, warm core `#ffdca0` on `#050200`). Pass Arbiter Gotham
 via `u_color_*` / `u_bg` if you want the TUI palette instead.

@@ -1,4 +1,4 @@
-# Embedding thoughtform
+# Embedding axon
 
 Same visual on the web, in a WKWebView, or as a native Metal view. The
 shader has no I/O; hosts feed it the [presence protocol](protocol.md).
@@ -10,11 +10,11 @@ already the iPhone browser path.
 
 ```js
 import { PresenceDriver } from "./web/js/presence.js";
-import { ThoughtformRenderer, loadShaderSources } from "./web/js/renderer.js";
+import { AxonRenderer, loadShaderSources } from "./web/js/renderer.js";
 import { AudioPresence } from "./web/js/audio.js";
 
 const sources = await loadShaderSources(""); // repo root, where /shaders lives
-const renderer = new ThoughtformRenderer(canvas, sources);
+const renderer = new AxonRenderer(canvas, sources);
 const driver = new PresenceDriver({ quality: 0.55 }); // phones
 const audio = new AudioPresence();
 
@@ -29,7 +29,7 @@ function frame(now) {
 }
 ```
 
-Serve the **repository root** (so `shaders/thoughtform.frag.glsl` is fetchable):
+Serve the **repository root** (so `shaders/axon.frag.glsl` is fetchable):
 
 ```sh
 python3 -m http.server 4173
@@ -42,25 +42,25 @@ python3 -m http.server 4173
 
 Add to an Xcode target:
 
-- `shaders/thoughtform.metal` (compiled into the default library)
-- `ios/ThoughtformRenderer.swift`
-- `ios/ThoughtformView.swift`
+- `shaders/axon.metal` (compiled into the default library)
+- `ios/AxonRenderer.swift`
+- `ios/AxonView.swift`
 
 ```swift
 import SwiftUI
 
 struct AlfredFace: View {
-    @StateObject private var presence = ThoughtformPresence()
+    @StateObject private var presence = AxonPresence()
 
     var body: some View {
-        ThoughtformView(presence: presence)
+        AxonView(presence: presence)
             .ignoresSafeArea()
             .onAppear { presence.setMode(.listen) }
     }
 }
 ```
 
-Drive `ThoughtformPresence` from whatever owns the Alfred HTTP client:
+Drive `AxonPresence` from whatever owns the Alfred HTTP client:
 
 ```swift
 presence.ingestAlfred(phase: .recording)
@@ -81,7 +81,7 @@ If you do not want a Metal target, load `web/index.html` (from the bundle or a
 local server) in a full-screen `WKWebView`. Call into the page with
 
 ```js
-window.thoughtformSetMode("think")
+window.axonSetMode("think")
 ```
 
 once you expose a small bridge from `demo.js`. Native Metal is the lower-power
@@ -90,7 +90,7 @@ path; WKWebView is the fastest way to share one shader with the website.
 ## Alfred (C++)
 
 Alfred’s pipeline is transport-agnostic (`TurnPipeline` + `AudioSink`). A
-future presence emitter can publish `thoughtform::Frame` from the same
+future presence emitter can publish `axon::Frame` from the same
 moments the HTTP handler already knows about:
 
 | Hook | Frame |
@@ -102,7 +102,7 @@ moments the HTTP handler already knows about:
 | `unregister_turn` | `idle` |
 | `cancel_turn` | `listen` |
 
-Header: [`include/thoughtform.hpp`](../include/thoughtform.hpp). JSON schema:
+Header: [`include/axon.hpp`](../include/axon.hpp). JSON schema:
 [`protocol/presence.schema.json`](../protocol/presence.schema.json).
 
 Until Alfred grows `GET /v1/presence`, keep the driver on the **device or

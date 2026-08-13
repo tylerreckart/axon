@@ -1,4 +1,4 @@
-#include "thoughtform.hpp"
+#include "axon.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -6,7 +6,7 @@
 #include <vector>
 
 int main() {
-  using namespace thoughtform;
+  using namespace axon;
 
   assert(mode_from_name("listen") == Mode::Listen);
   assert(mode_from_alfred_phase("thinking") == Mode::Think);

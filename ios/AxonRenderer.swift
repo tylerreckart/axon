@@ -2,22 +2,22 @@ import Foundation
 import MetalKit
 import QuartzCore
 
-final class ThoughtformRenderer: NSObject, MTKViewDelegate {
+final class AxonRenderer: NSObject, MTKViewDelegate {
     private let device: MTLDevice
     private let queue: MTLCommandQueue
     private let pipeline: MTLRenderPipelineState
-    private let presence: ThoughtformPresence
+    private let presence: AxonPresence
     private var lastTime: CFTimeInterval = CACurrentMediaTime()
 
-    init?(device: MTLDevice, presence: ThoughtformPresence) {
+    init?(device: MTLDevice, presence: AxonPresence) {
         self.device = device
         self.presence = presence
         guard let queue = device.makeCommandQueue() else { return nil }
         self.queue = queue
 
         guard let library = device.makeDefaultLibrary(),
-              let vertex = library.makeFunction(name: "thoughtform_vertex"),
-              let fragment = library.makeFunction(name: "thoughtform_fragment")
+              let vertex = library.makeFunction(name: "axon_vertex"),
+              let fragment = library.makeFunction(name: "axon_fragment")
         else { return nil }
 
         let desc = MTLRenderPipelineDescriptor()
@@ -53,7 +53,7 @@ final class ThoughtformRenderer: NSObject, MTKViewDelegate {
         )
 
         encoder.setRenderPipelineState(pipeline)
-        encoder.setFragmentBytes(&uniforms, length: MemoryLayout<ThoughtformUniforms>.stride, index: 0)
+        encoder.setFragmentBytes(&uniforms, length: MemoryLayout<AxonUniforms>.stride, index: 0)
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         encoder.endEncoding()
         commandBuffer.present(drawable)

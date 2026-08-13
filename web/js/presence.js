@@ -1,4 +1,4 @@
-/** thoughtform presence driver — isomorphic (browser + node). */
+/** axon presence driver — isomorphic (browser + node). */
 
 export const MODES = Object.freeze(["idle", "listen", "think", "speak"]);
 
@@ -9,10 +9,10 @@ export const MODE_INDEX = Object.freeze({
   speak: 3,
 });
 
-/** PLATO plasma — amber cells on a near-black panel. Default. */
+/** PLATO plasma — white body, warm phosphor core, near-black void. Default. */
 export const PLATO = Object.freeze({
-  colorA: Object.freeze([1.0, 0.392, 0.078]), // #ff6414
-  colorB: Object.freeze([1.0, 0.706, 0.353]), // #ffb45a
+  colorA: Object.freeze([1.0, 1.0, 1.0]), // #ffffff
+  colorB: Object.freeze([1.0, 1.0, 1.0]), // #ffffff
   colorC: Object.freeze([1.0, 0.863, 0.627]), // #ffdca0
   background: Object.freeze([0.02, 0.008, 0.0]), // #050200
 });
@@ -104,9 +104,9 @@ export function simulatedEnvelope(time, kind) {
       high: clamp01(0.08 + 0.2 * Math.abs(Math.sin(t * 11.0))),
     };
   }
-  const syllable = Math.pow(Math.max(0, Math.sin(t * 6.2)), 1.6);
-  const formant = 0.35 + 0.65 * syllable;
-  const rms = clamp01(0.12 + 0.78 * formant * (0.75 + 0.25 * Math.sin(t * 13.0)));
+  const syllable = Math.pow(0.5 + 0.5 * Math.sin(t * 3.2), 1.8);
+  const swell = 0.55 + 0.45 * Math.sin(t * 1.55 + 0.4);
+  const rms = clamp01(0.16 + 0.68 * syllable * swell);
   return {
     rms,
     low: clamp01(rms * 0.85),
@@ -118,15 +118,15 @@ export function simulatedEnvelope(time, kind) {
 export class PresenceDriver {
   /**
    * @param {object} [opts]
-   * @param {number} [opts.modeTau=0.22] seconds to crossfade modes
-   * @param {number} [opts.audioTau=0.06]
+   * @param {number} [opts.modeTau=0.34] seconds to crossfade modes
+   * @param {number} [opts.audioTau=0.16]
    * @param {number} [opts.chaosTau=0.45]
    * @param {number} [opts.quality=1]
    * @param {typeof PLATO} [opts.palette]
    */
   constructor(opts = {}) {
-    this.modeTau = opts.modeTau ?? 0.22;
-    this.audioTau = opts.audioTau ?? 0.06;
+    this.modeTau = opts.modeTau ?? 0.34;
+    this.audioTau = opts.audioTau ?? 0.16;
     this.chaosTau = opts.chaosTau ?? 0.45;
     this.progressTau = opts.progressTau ?? 0.35;
     this.attentionTau = opts.attentionTau ?? 0.28;
@@ -155,7 +155,7 @@ export class PresenceDriver {
 
   setMode(mode) {
     if (!MODES.includes(mode)) {
-      throw new Error(`unknown thoughtform mode: ${mode}`);
+      throw new Error(`unknown axon mode: ${mode}`);
     }
     this.targetMode = mode;
     if (mode === "idle") {
