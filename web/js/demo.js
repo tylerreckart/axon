@@ -6,22 +6,22 @@ function isMobile() {
 }
 
 function simulateTurn(driver, t) {
-  const cycle = t % 14;
-  if (cycle < 2.2) {
+  const cycle = t % 24;
+  if (cycle < 4.0) {
     driver.ingestAlfredTurn({ phase: "idle" });
     driver.setAudio({ rms: 0, low: 0, mid: 0, high: 0 });
-  } else if (cycle < 5.2) {
+  } else if (cycle < 9.5) {
     driver.ingestAlfredTurn({ phase: "recording", turnId: "demo-turn" });
     driver.setAudio(simulatedEnvelope(cycle, "listen"));
-  } else if (cycle < 8.6) {
+  } else if (cycle < 15.5) {
     driver.ingestAlfredTurn({
       phase: "thinking",
       turnId: "demo-turn",
       transcript: "what is on my calendar",
     });
-    if (cycle < 5.5) driver.ingestArbiterEvent("request_received");
-    else if (cycle < 6.2) driver.ingestArbiterEvent("agent_start");
-    else if (cycle < 7.2) driver.ingestArbiterEvent("tool_call");
+    if (cycle < 10.0) driver.ingestArbiterEvent("request_received");
+    else if (cycle < 11.2) driver.ingestArbiterEvent("agent_start");
+    else if (cycle < 13.0) driver.ingestArbiterEvent("tool_call");
     else driver.ingestArbiterEvent("text");
     driver.setAudio({ rms: 0.05, low: 0.04, mid: 0.03, high: 0.06 });
   } else {
@@ -35,7 +35,10 @@ async function main() {
   const root = new URL("../../", import.meta.url);
   const sources = await loadShaderSources(root.href.replace(/\/$/, ""));
   const renderer = new AxonRenderer(canvas, sources);
-  const driver = new PresenceDriver({ quality: isMobile() ? 0.55 : 1 });
+  const driver = new PresenceDriver({
+    quality: isMobile() ? 0.55 : 1,
+    modeTau: 0.55,
+  });
 
   let t = 0;
   let last = performance.now();

@@ -83,7 +83,7 @@ void main() {
   float prog = saturate(u_progress);
   float quality = saturate(u_quality);
 
-  float breathHz = mix(0.14, 0.22, listenW) + speakW * 0.18;
+  float breathHz = mix(0.08, 0.13, listenW) + speakW * 0.10;
   float breath = 0.55 * sin(t * breathHz * 6.28318)
     + 0.30 * sin(t * breathHz * 2.15 + 1.1)
     + 0.15 * sin(t * breathHz * 0.73 + 2.4);
@@ -104,8 +104,8 @@ void main() {
   lum += (0.10 * listenW + 0.20 * speakW) * amp;
   lum += 0.05 * breath;
 
-  float spin = t * (0.22 + thinkW * 0.10 + speakW * 0.05);
-  float tilt = 0.42 + 0.05 * sin(t * 0.13 + prog);
+  float spin = t * (0.10 + thinkW * 0.05 + speakW * 0.025);
+  float tilt = 0.42 + 0.05 * sin(t * 0.07 + prog);
 
   int N = int(mix(140.0, 240.0, quality) + 0.5);
   float nCount = float(N);
@@ -115,8 +115,8 @@ void main() {
     return;
   }
 
-  float sprite = mix(0.011, 0.0075, quality);
-  sprite *= 1.0 + 0.18 * speakW * amp;
+  float sprite = mix(0.0072, 0.0048, quality);
+  sprite *= 1.0 + 0.12 * speakW * amp;
 
   vec3 col = u_bg;
   for (int i = 0; i < MAX_N; i++) {
@@ -127,8 +127,8 @@ void main() {
     float phi = fi * GOLDEN_ANGLE;
     vec3 p = vec3(cos(phi) * rxy, y, sin(phi) * rxy);
 
-    float n = vnoise3(p * 1.65 + vec3(t * 0.17, t * 0.11, prog * 0.5));
-    float n2 = vnoise3(p * 3.05 + vec3(8.1, t * 0.09, 2.4));
+    float n = vnoise3(p * 1.65 + vec3(t * 0.08, t * 0.05, prog * 0.5));
+    float n2 = vnoise3(p * 3.05 + vec3(8.1, t * 0.04, 2.4));
     float field = n * 0.72 + n2 * 0.28;
     float bump = field * 2.0 - 0.92;
     float stray = hash31(vec3(fi, 4.2, 9.1));
@@ -140,16 +140,16 @@ void main() {
     vec2 q = p.xy * persp;
     float d = length(uv - q);
     float sz = sprite * persp;
-    float core = exp(-d * d / max(sz * sz, 1e-6));
-    float glow = exp(-d * d / max(sz * sz * 8.5, 1e-6));
-    float halo = exp(-d * d / max(sz * sz * 22.0, 1e-6));
-    float s = core + glow * 0.32 + halo * 0.12;
+    float core = exp(-d * d / max(sz * sz * 0.55, 1e-6));
+    float glow = exp(-d * d / max(sz * sz * 3.6, 1e-6));
+    float halo = exp(-d * d / max(sz * sz * 9.0, 1e-6));
+    float s = core + glow * 0.16 + halo * 0.05;
 
     float shade = 0.28 + 0.72 * saturate(0.5 + 0.55 * p.z);
     vec3 tint = mix(mix(u_color_a, u_color_b, 0.35), u_color_c, saturate(field));
 
     float phase = stray * 6.28318;
-    float spark = 0.5 + 0.5 * sin(t * (1.55 + listenW * 1.15 + speakW * 2.05) + phase);
+    float spark = 0.5 + 0.5 * sin(t * (0.85 + listenW * 0.55 + speakW * 1.05) + phase);
     spark = mix(spark, spark * spark, speakW * 0.35);
     float band = mix(low, mix(mid, high, stray), stray);
     float live = listenW * (0.58 + 0.32 * amp) + speakW * (0.62 + 0.38 * amp);
@@ -157,7 +157,7 @@ void main() {
     bright *= mix(1.0, mix(0.28, 1.65, spark), live);
     bright *= 1.0 + live * band * mix(-0.08, 0.42, spark);
 
-    col += tint * s * shade * lum * 0.42 * bright;
+    col += tint * s * shade * lum * 0.52 * bright;
   }
 
   fragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
