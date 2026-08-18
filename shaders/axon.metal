@@ -99,34 +99,41 @@ fragment float4 axon_fragment(VertexOut in [[stage_in]],
     + 0.30 * sin(t * breathHz * 2.15 + 1.1)
     + 0.15 * sin(t * breathHz * 0.73 + 2.4);
 
+  float jaw = speakW * amp;
+  float vowel = speakW * low;
+  float sibilant = speakW * high;
+
   float radius = 0.44
-    + 0.020 * breath
-    + 0.028 * amp * (0.4 * listenW + speakW)
+    + 0.020 * breath * (1.0 - 0.7 * speakW)
+    + 0.022 * amp * listenW
+    + 0.048 * jaw
+    + 0.016 * vowel
     + 0.010 * attn
     + 0.006 * low
     - 0.026 * thinkW;
 
   float disp = 0.36
     + thinkW * (0.16 + 0.20 * chaos)
-    + speakW * (0.06 + 0.10 * amp)
+    + speakW * (0.04 + 0.26 * amp + 0.10 * low)
     - listenW * 0.09;
 
-  float lum = idleW * 0.78 + listenW * 0.98 + thinkW * 0.82 + speakW * 1.12;
-  lum += (0.10 * listenW + 0.20 * speakW) * amp;
-  lum += 0.05 * breath;
+  float lum = idleW * 0.78 + listenW * 0.98 + thinkW * 0.82
+    + speakW * (0.68 + 0.88 * amp + 0.20 * high);
+  lum += 0.10 * listenW * amp;
+  lum += 0.05 * breath * (1.0 - 0.8 * speakW);
 
   float spin = t * (0.10 + thinkW * 0.05 + speakW * 0.025);
   float tilt = 0.42 + 0.05 * sin(t * 0.07 + prog);
 
   int N = int(mix(140.0, 240.0, quality) + 0.5);
   float nCount = float(N);
-  float bound = radius * (1.0 + disp) * 1.55;
+  float bound = radius * (1.0 + disp) * mix(1.55, 1.82, speakW);
   if (length(uv) > bound) {
     return float4(background, 1.0);
   }
 
   float sprite = mix(0.0072, 0.0048, quality);
-  sprite *= 1.0 + 0.12 * speakW * amp;
+  sprite *= 1.0 + 0.28 * jaw + 0.14 * sibilant;
 
   float3 col = background;
   for (int i = 0; i < MAX_N; i++) {
@@ -137,14 +144,19 @@ fragment float4 axon_fragment(VertexOut in [[stage_in]],
     float phi = fi * GOLDEN_ANGLE;
     float3 p = float3(cos(phi) * rxy, y, sin(phi) * rxy);
 
-    float n = vnoise3(p * 1.65 + float3(t * 0.08, t * 0.05, prog * 0.5));
+    float n = vnoise3(p * 1.65 + float3(t * mix(0.08, 0.16, jaw), t * 0.05, prog * 0.5));
     float n2 = vnoise3(p * 3.05 + float3(8.1, t * 0.04, 2.4));
     float field = n * 0.72 + n2 * 0.28;
     float bump = field * 2.0 - 0.92;
     float stray = hash31(float3(fi, 4.2, 9.1));
-    float rad = radius * (1.0 + disp * bump + thinkW * chaos * 0.18 * stray);
+    float mouth = saturate(1.0 - abs(y) * 1.65);
+    float rad = radius * (1.0 + disp * bump + thinkW * chaos * 0.18 * stray
+      + speakW * (0.10 * amp + 0.06 * low) * mouth);
     p *= rad;
     p = rotY(rotX(p, tilt), spin);
+    p.x *= 1.0 + 0.18 * jaw + 0.10 * vowel;
+    p.y *= 1.0 - 0.22 * jaw;
+    p.z *= 1.0 - 0.05 * jaw;
 
     float persp = 1.15 / (1.55 - 0.42 * p.z);
     float2 q = p.xy * persp;
@@ -159,13 +171,17 @@ fragment float4 axon_fragment(VertexOut in [[stage_in]],
     float3 tint = mix(mix(colorA, colorB, 0.35), colorC, saturate(field));
 
     float phase = stray * 6.28318;
-    float spark = 0.5 + 0.5 * sin(t * (0.85 + listenW * 0.55 + speakW * 1.05) + phase);
-    spark = mix(spark, spark * spark, speakW * 0.35);
+    float sparkIdle = 0.5 + 0.5 * sin(t * (0.85 + listenW * 0.55) + phase);
+    float sparkVoice = saturate(0.12 + amp * 0.95 + high * (0.35 + 0.85 * stray)
+      + 0.08 * sin(t * 8.5 + phase));
+    float spark = mix(sparkIdle, sparkVoice, speakW);
+    spark = mix(spark, spark * spark, speakW * 0.22);
     float band = mix(low, mix(mid, high, stray), stray);
-    float live = listenW * (0.58 + 0.32 * amp) + speakW * (0.62 + 0.38 * amp);
+    float live = listenW * (0.58 + 0.32 * amp) + speakW * (0.40 + 0.60 * amp);
     float bright = mix(0.62, 1.18, stray) * mix(0.88, 1.16, saturate(field));
     bright *= mix(1.0, mix(0.28, 1.65, spark), live);
     bright *= 1.0 + live * band * mix(-0.08, 0.42, spark);
+    bright *= 1.0 + speakW * amp * 0.38 * mouth;
 
     col += tint * s * shade * lum * 0.52 * bright;
   }

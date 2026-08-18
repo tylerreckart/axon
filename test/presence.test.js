@@ -70,6 +70,19 @@ describe("presence driver", () => {
     assert.ok(j.amplitude >= 0 && j.amplitude <= 1);
     assert.equal(j.bands.length, 3);
   });
+
+  it("speak audio follows onsets faster than releases", () => {
+    const d = new PresenceDriver();
+    d.setMode("speak");
+    d.setAudio({ rms: 1, low: 1, mid: 1, high: 1 });
+    d.tick(0.04);
+    const attack = d.amplitude;
+    d.setAudio({ rms: 0, low: 0, mid: 0, high: 0 });
+    d.tick(0.04);
+    const released = d.amplitude;
+    assert.ok(attack > 0.55, `attack ${attack}`);
+    assert.ok(released > attack * 0.45, `still ${released} after short release from ${attack}`);
+  });
 });
 
 describe("helpers", () => {
@@ -103,6 +116,17 @@ describe("helpers", () => {
         assert.ok(e[k] >= 0 && e[k] <= 1, `${kind}.${k}=${e[k]}`);
       }
     }
+  });
+
+  it("speak envelope has phrase pauses and syllable peaks", () => {
+    const samples = [];
+    for (let i = 0; i < 240; i++) {
+      samples.push(simulatedEnvelope(i * 0.01, "speak").rms);
+    }
+    const min = Math.min(...samples);
+    const max = Math.max(...samples);
+    assert.ok(max > 0.55, `peak ${max}`);
+    assert.ok(min < 0.2, `pause ${min}`);
   });
 });
 

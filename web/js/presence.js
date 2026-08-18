@@ -79,9 +79,14 @@ export function defaultBands(amplitude) {
   return [a, a * 0.6, a * 0.3];
 }
 
+function hash11(n) {
+  const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 /**
  * Simulated speech / listen envelope for demos without a live analyser.
- * `kind` is "listen" (softer, irregular) or "speak" (syllable-like).
+ * `kind` is "listen" (softer, irregular) or "speak" (phrases, pauses, syllables).
  */
 export function simulatedEnvelope(time, kind) {
   const t = Math.max(0, time);
@@ -98,14 +103,42 @@ export function simulatedEnvelope(time, kind) {
       high: clamp01(0.08 + 0.2 * Math.abs(Math.sin(t * 11.0))),
     };
   }
-  const syllable = Math.pow(0.5 + 0.5 * Math.sin(t * 3.2), 1.8);
-  const swell = 0.55 + 0.45 * Math.sin(t * 1.55 + 0.4);
-  const rms = clamp01(0.16 + 0.68 * syllable * swell);
+
+  // Phrase: ~1.7s of speech, ~0.5s rest — commas, not a metronome.
+  const phraseT = (t % 2.2) / 2.2;
+  const talkEnd = 0.76;
+  let phrase = 0;
+  if (phraseT < talkEnd) {
+    phrase = Math.pow(Math.sin((phraseT / talkEnd) * Math.PI), 0.45);
+  }
+
+  const sylRate = 4.15 + 0.35 * Math.sin(t * 0.37);
+  const sylPos = t * sylRate;
+  const sylId = Math.floor(sylPos);
+  const f = sylPos - sylId;
+  const h = hash11(sylId + 2.7);
+  const h2 = hash11(sylId + 9.1);
+
+  const attack = 0.1 + 0.08 * h;
+  const hold = attack + 0.16 + 0.22 * (1 - h);
+  let syllable = 0;
+  if (f < attack) syllable = f / Math.max(attack, 1e-4);
+  else if (f < hold) syllable = 1;
+  else syllable = Math.max(0, 1 - (f - hold) / Math.max(1 - hold, 1e-4));
+  syllable = syllable * syllable * (3 - 2 * syllable);
+  if (h < 0.16) syllable *= 0.22;
+  else if (h > 0.82) syllable = Math.min(1, syllable * 1.18);
+
+  const onset = Math.max(0, 1 - f / Math.max(attack * 1.8, 0.08));
+  const cons = phrase * syllable * onset * (0.35 + 0.65 * h2);
+  const voiced = phrase * syllable;
+  const rms = clamp01(0.03 + 0.9 * voiced + 0.08 * cons);
+
   return {
     rms,
-    low: clamp01(rms * 0.85),
-    mid: clamp01(rms * 0.7 + 0.1 * syllable),
-    high: clamp01(0.05 + rms * 0.45 * (0.4 + 0.6 * syllable)),
+    low: clamp01(voiced * (0.62 + 0.32 * h)),
+    mid: clamp01(voiced * (0.48 + 0.28 * (1 - h)) + cons * 0.12),
+    high: clamp01(0.03 + voiced * 0.18 + cons * 0.72),
   };
 }
 
@@ -113,7 +146,9 @@ export class PresenceDriver {
   /**
    * @param {object} [opts]
    * @param {number} [opts.modeTau=0.34] seconds to crossfade modes
-   * @param {number} [opts.audioTau=0.16]
+   * @param {number} [opts.audioTau=0.16] listen / idle audio follow
+   * @param {number} [opts.audioAttackTau=0.038] speak onset follow
+   * @param {number} [opts.audioReleaseTau=0.095] speak decay follow
    * @param {number} [opts.chaosTau=0.45]
    * @param {number} [opts.quality=1]
    * @param {typeof PLATO} [opts.palette]
@@ -121,6 +156,8 @@ export class PresenceDriver {
   constructor(opts = {}) {
     this.modeTau = opts.modeTau ?? 0.34;
     this.audioTau = opts.audioTau ?? 0.16;
+    this.audioAttackTau = opts.audioAttackTau ?? 0.038;
+    this.audioReleaseTau = opts.audioReleaseTau ?? 0.095;
     this.chaosTau = opts.chaosTau ?? 0.45;
     this.progressTau = opts.progressTau ?? 0.35;
     this.attentionTau = opts.attentionTau ?? 0.28;
@@ -237,9 +274,16 @@ export class PresenceDriver {
     const sum = this.weights[0] + this.weights[1] + this.weights[2] + this.weights[3] || 1;
     for (let i = 0; i < 4; i++) this.weights[i] /= sum;
 
-    this.amplitude = expSmooth(this.amplitude, this._targetAmp, step, this.audioTau);
+    const rising = this._targetAmp > this.amplitude;
+    const audioTau =
+      this.targetMode === "speak"
+        ? rising
+          ? this.audioAttackTau
+          : this.audioReleaseTau
+        : this.audioTau;
+    this.amplitude = expSmooth(this.amplitude, this._targetAmp, step, audioTau);
     for (let i = 0; i < 3; i++) {
-      this.bands[i] = expSmooth(this.bands[i], this._targetBands[i], step, this.audioTau);
+      this.bands[i] = expSmooth(this.bands[i], this._targetBands[i], step, audioTau);
     }
 
     this._chaosPulse = expSmooth(this._chaosPulse, 0, step, 0.28);

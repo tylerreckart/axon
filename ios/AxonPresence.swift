@@ -148,7 +148,11 @@ final class AxonPresence: ObservableObject {
         let sum = max(weights.x + weights.y + weights.z + weights.w, 0.0001)
         weights /= sum
 
-        let kAudio = 1 - exp(-step / 0.06)
+        var kAudio = 1 - exp(-step / 0.06)
+        if mode == .speak {
+            let audioTau: Float = targetAmp > amplitude ? 0.038 : 0.095
+            kAudio = 1 - exp(-step / audioTau)
+        }
         amplitude += (targetAmp - amplitude) * kAudio
         bands += (targetBands - bands) * kAudio
 
