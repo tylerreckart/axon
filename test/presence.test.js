@@ -83,6 +83,17 @@ describe("presence driver", () => {
     assert.ok(attack > 0.55, `attack ${attack}`);
     assert.ok(released > attack * 0.45, `still ${released} after short release from ${attack}`);
   });
+
+  it("speak bands follow their own attack and release", () => {
+    const d = new PresenceDriver();
+    d.setMode("speak");
+    d.setAudio({ rms: 1, low: 1, mid: 1, high: 0 });
+    for (let i = 0; i < 40; i++) d.tick(0.016);
+    d.setAudio({ rms: 0, low: 0, mid: 0, high: 1 });
+    d.tick(0.04);
+    assert.ok(d.bands[2] > 0.55, `high attack ${d.bands[2]}`);
+    assert.ok(d.amplitude > 0.45, `rms still releasing ${d.amplitude}`);
+  });
 });
 
 describe("helpers", () => {

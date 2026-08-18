@@ -66,6 +66,11 @@ function expSmooth(current, target, dt, tau) {
   return lerp(current, target, k);
 }
 
+function followTau(current, target, { attack, release, rest, articulated }) {
+  if (!articulated) return rest;
+  return target > current ? attack : release;
+}
+
 export function modeWeights(mode) {
   const w = [0, 0, 0, 0];
   const i = MODE_INDEX[mode];
@@ -274,16 +279,25 @@ export class PresenceDriver {
     const sum = this.weights[0] + this.weights[1] + this.weights[2] + this.weights[3] || 1;
     for (let i = 0; i < 4; i++) this.weights[i] /= sum;
 
-    const rising = this._targetAmp > this.amplitude;
-    const audioTau =
-      this.targetMode === "speak"
-        ? rising
-          ? this.audioAttackTau
-          : this.audioReleaseTau
-        : this.audioTau;
-    this.amplitude = expSmooth(this.amplitude, this._targetAmp, step, audioTau);
+    const speakFollow = {
+      attack: this.audioAttackTau,
+      release: this.audioReleaseTau,
+      rest: this.audioTau,
+      articulated: this.targetMode === "speak",
+    };
+    this.amplitude = expSmooth(
+      this.amplitude,
+      this._targetAmp,
+      step,
+      followTau(this.amplitude, this._targetAmp, speakFollow)
+    );
     for (let i = 0; i < 3; i++) {
-      this.bands[i] = expSmooth(this.bands[i], this._targetBands[i], step, audioTau);
+      this.bands[i] = expSmooth(
+        this.bands[i],
+        this._targetBands[i],
+        step,
+        followTau(this.bands[i], this._targetBands[i], speakFollow)
+      );
     }
 
     this._chaosPulse = expSmooth(this._chaosPulse, 0, step, 0.28);
