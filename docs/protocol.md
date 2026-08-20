@@ -11,7 +11,7 @@ the network. Hosts map voice + SSE onto this frame and upload it every draw.
 | `idle` | No turn in flight | Slow-spinning particle blob, quiet breath |
 | `listen` | Mic open / PTT held / VAD | Tighter mesh, brighter, more coherent |
 | `think` | STT done, waiting on Arbiter (and until first TTS chunk) | Stronger noise, scattered strays |
-| `speak` | TTS PCM (or model text if you have no audio yet) | Mesh pulses with the voice |
+| `speak` | TTS PCM (or model text if you have no audio yet) | Jaw-like squash and brightness follow the voice |
 
 Crossfades happen on the host (`PresenceDriver`). The shader receives a
 `vec4 u_weights` (idle, listen, think, speak) that should sum to ~1.

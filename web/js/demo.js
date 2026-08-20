@@ -25,8 +25,9 @@ function simulateTurn(driver, t) {
     else driver.ingestArbiterEvent("text");
     driver.setAudio({ rms: 0.05, low: 0.04, mid: 0.03, high: 0.06 });
   } else {
+    const speakT = cycle - 15.5;
     driver.ingestAlfredTurn({ phase: "speaking", turnId: "demo-turn" });
-    driver.setAudio(simulatedEnvelope(cycle, "speak"));
+    driver.setAudio(simulatedEnvelope(speakT, "speak"));
   }
 }
 

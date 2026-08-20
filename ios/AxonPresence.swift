@@ -138,6 +138,18 @@ final class AxonPresence: ObservableObject {
         targetBands = SIMD3(unit(low), unit(mid), unit(high))
     }
 
+    /// Speak uses a faster attack than release, chosen per channel so a falling
+    /// RMS does not smear an independently rising formant band.
+    private func audioFollow(current: Float, target: Float, dt: Float) -> Float {
+        let tau: Float
+        if mode == .speak {
+            tau = target > current ? 0.038 : 0.095
+        } else {
+            tau = 0.06
+        }
+        return 1 - exp(-dt / tau)
+    }
+
     func tick(dt: Float, resolution: SIMD2<Float>) -> AxonUniforms {
         let step = min(max(dt, 0), 0.1)
         time += step
@@ -148,9 +160,10 @@ final class AxonPresence: ObservableObject {
         let sum = max(weights.x + weights.y + weights.z + weights.w, 0.0001)
         weights /= sum
 
-        let kAudio = 1 - exp(-step / 0.06)
-        amplitude += (targetAmp - amplitude) * kAudio
-        bands += (targetBands - bands) * kAudio
+        amplitude += (targetAmp - amplitude) * audioFollow(current: amplitude, target: targetAmp, dt: step)
+        bands.x += (targetBands.x - bands.x) * audioFollow(current: bands.x, target: targetBands.x, dt: step)
+        bands.y += (targetBands.y - bands.y) * audioFollow(current: bands.y, target: targetBands.y, dt: step)
+        bands.z += (targetBands.z - bands.z) * audioFollow(current: bands.z, target: targetBands.z, dt: step)
 
         let kPulse = 1 - exp(-step / 0.28)
         chaosPulse += (0 - chaosPulse) * kPulse
